@@ -1,0 +1,219 @@
+<?php
+
+class Gateway {
+  public $table;
+
+  public $table_fields;
+
+  public function get($id) {
+    $record = R::load($this->table, $id);
+
+    if ($record->id === 0) {
+      return null;
+    }
+
+    return bean_to_arr($record); 
+  }
+
+  public function getAll($type='array') {
+    $record = R::findAll(
+                      $this->table, 
+                      "ORDER BY ? ? LIMIT ? OFFSET ?", 
+                      ['title', 'ASC', 10, 0]
+                    );
+
+    if ($type != 'array') {
+      return $record;
+    }
+
+    return arr_bean_to_arr($record);
+  }
+
+  public function getList($get_params) {
+    $filter = array_key_exists("filter", $get_params) ? $get_params["filter"] : [];
+    $sort = array_key_exists("sort", $get_params) ? $get_params["sort"] : [];
+    $range = array_key_exists("range", $get_params) ? $get_params["range"] : [];
+
+    $sort_field = array_key_exists(0, $sort) ? $sort[0] : "id";
+    $sort_direction = array_key_exists(1, $sort) ? $sort[1] : "ASC";
+    $offset = array_key_exists(0, $range) ? $range[0] : 0;
+    $limit  = array_key_exists(1, $range) ? $range[1] : null;
+
+    $query_str = "ORDER BY $sort_field $sort_direction";
+
+    if ($limit) {
+      $query_str .= " LIMIT ? OFFSET ?";
+      $query_params_arr[] = $limit;
+      $query_params_arr[] = $offset;
+    } else {
+      $range = [];
+    }
+
+    $where_str = "";
+    if ($filter) {
+      $value = current($filter);
+      $field = key($filter);
+      $where_str = "WHERE $field = $value";
+      next($filter);
+
+      while(current($filter)) {
+        $field = key($filter);
+        $value = current($filter);
+
+        $where_str .= " AND $field = $value";
+
+        next($filter);
+      }
+      
+      $where_str .= " ";
+    }
+
+    $query_str = $where_str . $query_str;
+
+    $record = R::findAll($this->table, $query_str, $query_params_arr);
+    $record = arr_bean_to_arr($record);
+
+    set_content_range_header($this->table, count($record), $range);
+
+    return $record;
+  }
+
+  public function getMany($ids) {
+    $record = R::loadAll($this->table, $ids);
+    $record = arr_bean_to_arr($record);
+
+    set_content_range_header($this->table, count($record));
+
+    return $record;
+  }
+
+  public function getManyReference($get_params) {
+    $filter = array_key_exists("filter", $get_params) ? $get_params["filter"] : [];
+    $sort = array_key_exists("sort", $get_params) ? $get_params["sort"] : [];
+    $range = array_key_exists("range", $get_params) ? $get_params["range"] : [];
+
+    $sort_field = array_key_exists(0, $sort) ? $sort[0] : "id";
+    $sort_direction = array_key_exists(1, $sort) ? $sort[1] : "ASC";
+    $offset = array_key_exists(0, $range) ? $range[0] : 0;
+    $limit  = array_key_exists(1, $range) ? $range[1] : null;
+
+    $query_str = "ORDER BY $sort_field $sort_direction";
+
+    if ($limit) {
+      $query_str .= " LIMIT ? OFFSET ?";
+      $query_params_arr[] = $limit;
+      $query_params_arr[] = $offset;
+    } else {
+      $range = [];
+    }
+
+    $where_str = "";
+    if ($filter) {
+      $value = current($filter);
+      $field = key($filter);
+      $where_str = "WHERE $field = $value";
+      next($filter);
+
+      while(current($filter)) {
+        $field = key($filter);
+        $value = current($filter);
+
+        $where_str .= " AND $field = $value";
+
+        next($filter);
+      }
+      
+      $where_str .= " ";
+    }
+
+    $query_str = $where_str . $query_str;
+    echo $query_str;
+
+    $record = R::findAll($this->table, $query_str, $query_params_arr);
+    $record = arr_bean_to_arr($record);
+
+    set_content_range_header($this->table, count($record), $range);
+
+    return $record;
+  }
+
+  public function update($record, $new_data) {
+    $record = R::convertToBean($this->table, $record);
+    $rows = 0;
+    foreach($new_data as $field => $value) {
+      $record->{$field} = $value;
+    }
+    R::store($record);
+
+    return $record->export();
+  }
+
+  public function updateMany($ids, $new_data) {
+    $rows = 0;
+    $updated_ids = [];
+    foreach($ids as $id) {
+      $record = R::load($this->table, $id);
+
+      if ($record) {
+        foreach($new_data as $field => $value) {
+          $record->{$field} = $value;
+        }
+        R::store($record);
+        $updated_ids[] = $id;
+      }
+      
+      $rows ++;
+    }
+    
+    $updated_ids_str = json_encode($updated_ids);
+    return [
+      "message" => "Vacancy $updated_ids_str updated",
+      "rows" => $rows,
+    ];
+  }
+
+  public function delete($record) {
+    $record = R::convertToBean($this->table, $record);
+    $id = $record->id;
+
+    R::hunt($this->table, 'id = ?', [$id]);
+
+    return [
+      "message" => "Record $record->id deleted",
+      "rows" => 1,
+    ];
+  }
+
+  public function deleteMany($ids) {
+    R::trashBatch($this->table, $ids);
+    
+    $del_ids_str = json_encode($ids);
+    return [
+      "message" => "Records $del_ids_str delete",
+      "rows" => count($ids),
+    ];
+  }
+
+  public function check_fields($data) {
+    $check_arr = $this->table_fields;
+    
+    foreach($data as $key => $value) {
+      if (key_exists($key, $check_arr)) {
+        $check_arr[$key] = true;
+      }
+    }
+
+    $error_arr = array_filter($check_arr, function($field) {
+      return !$field;
+    });
+
+    if (count($error_arr) > 0) {
+      return [
+        "ok"  => false,
+        "message" => "some fields error",
+        "error" => array_keys($error_arr)
+      ];
+    }
+    return ["ok"  => true];
+  }
+}
