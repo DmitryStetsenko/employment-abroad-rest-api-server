@@ -137,6 +137,10 @@ class Gateway {
     return $record;
   }
 
+  public function getFull() {
+    return "get full data from {$this->table}";
+  }
+
   public function update($record, $new_data) {
     $record = R::convertToBean($this->table, $record);
     $rows = 0;

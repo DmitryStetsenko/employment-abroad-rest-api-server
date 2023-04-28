@@ -6,16 +6,20 @@ class Controller {
     $this->gateway = $gateway;
   }
 
-  public function processRequest(string $method, ?int $id, ?array $get_params): void {
+  public function processRequest(string $method, $resource, ?array $get_params): void {
     
     if($get_params) {
 
       $this->processFilterRequest($method, $get_params);
       
     }
-    else if ($id) {
-      
-      $this->processResourceRequest($method, $id);
+    else if ($resource) {
+
+      if (is_numeric($resource)) {
+        $this->processResourceRequest($method, $resource);
+      } else {
+        $this->processExtraResourceRequest($method, $resource);
+      }
 
     } else {
 
@@ -80,7 +84,27 @@ class Controller {
         break;
     }
 
-    
+  }
+
+  private function  processExtraResourceRequest(string $method, $resource): void {
+    if ($method !== "GET") {
+      return;
+    }
+
+    switch ($resource) {
+      case "full":
+        http_response_code(200);
+        $records = $this->gateway->getFull();
+        echo json_encode($records);
+        break;
+      
+      default:
+        http_response_code(404);
+        echo json_encode([
+          "message" => "unknown resource '{$resource}' !!!",
+        ]);
+        break;
+    }
   }
 
   private function processCollectionRequest(string $method): void {

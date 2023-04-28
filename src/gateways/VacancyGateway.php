@@ -60,6 +60,32 @@ class VacancyGateway extends Gateway {
     return $result;
   }
 
+  public function getFull() {
+    $relations = [
+      "employer",
+      "country",
+      "speciality",
+      "expirience",
+    ];
+    
+    $select_str = '';
+    $join_str = '';
+
+    foreach ($relations as $index => $table) {
+      $comma = $index !== count($relations) - 1 ? ',' : '';
+      $select_str .= "$table.name as {$table}_name{$comma}";
+      $join_str .= "INNER JOIN $table ON {$this->table}.{$table}_id = $table.id ";
+    }
+
+    $result = R::getAll(
+      "SELECT {$this->table}.*, {$select_str}
+      FROM {$this->table} 
+      $join_str
+    ");
+
+    return $result;
+  }
+
   public function getBy($relation_table, $id, $type='array') {
     $src_table = R::load(TABLE[$relation_table], $id);
     $vacancies = $src_table->ownVacancyList;

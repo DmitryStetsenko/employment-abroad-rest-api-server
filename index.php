@@ -39,9 +39,9 @@ if (!array_key_exists($table, TABLE)) {
   exit;
 }
 
-$id = $part[2] ?? null;
-$id = $id ? trim($id) : null;
-$id = $id ? (int) $id : null;
+$resource = $part[2] ?? null;
+$resource = $resource ? trim($resource) : null;
+$resource = is_numeric($resource) ? (int) $resource : $resource;
 
 switch ($table) {
   case "user":
@@ -90,7 +90,7 @@ switch ($table) {
     break;
 }
 
-$controller->processRequest($_SERVER["REQUEST_METHOD"], $id, $get_params);
+$controller->processRequest($_SERVER["REQUEST_METHOD"], $resource, $get_params);
 
 
 ?>
