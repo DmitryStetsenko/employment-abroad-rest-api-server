@@ -15,18 +15,18 @@ class Gateway {
     return bean_to_arr($record); 
   }
 
-  public function getAll($type='array') {
-    $record = R::findAll(
+  public function getAll() {
+    $records = R::findAll(
                       $this->table, 
                       "ORDER BY ? ? LIMIT ? OFFSET ?", 
                       ['title', 'ASC', 10, 0]
                     );
 
-    if ($type != 'array') {
-      return $record;
+    if (!$records) {
+      return [];
     }
 
-    return arr_bean_to_arr($record);
+    return arr_bean_to_arr($records);
   }
 
   public function getList($get_params) {

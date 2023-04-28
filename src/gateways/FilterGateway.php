@@ -52,52 +52,21 @@ class FilterGateway extends Gateway {
     return $result;
   }
 
-  public function getList($get_params) {
-    $filter = array_key_exists("filter", $get_params) ? $get_params["filter"] : [];
-
-    $sort = array_key_exists("sort", $get_params) ? $get_params["sort"] : [];
-    $range = array_key_exists("range", $get_params) ? $get_params["range"] : [];
-
-    $sort_field = array_key_exists(0, $sort) ? $sort[0] : "id";
-    $sort_direction = array_key_exists(1, $sort) ? $sort[1] : "ASC";
-    $offset = array_key_exists(0, $range) ? $range[0] : 0;
-    $limit  = array_key_exists(1, $range) ? $range[1] : null;
-
-    $query_str = "ORDER BY $sort_field $sort_direction";
-    $query_params_arr = [];
-
-    if ($limit) {
-      $query_str .= " LIMIT ? OFFSET ?";
-      $query_params_arr[] = $limit;
-      $query_params_arr[] = $offset;
-    } else {
-      $range = [];
+  public function getAll() {
+    $records = R::findAll(
+                      $this->table, 
+                      // "ORDER BY ? ? LIMIT ? OFFSET ?", 
+                      // ['title', 'ASC', 10, 0]
+                    );
+    if (!$records) {
+      return [];
     }
-
-    $where_str = "";
-    if ($filter) {
-      $value = current($filter);
-      $field = key($filter);
-      $where_str = "WHERE $field = $value";
-      next($filter);
-
-      while(current($filter)) {
-        $field = key($filter);
-        $value = current($filter);
-
-        $where_str .= " AND $field = $value";
-
-        next($filter);
-      }
-      
-      $where_str .= " ";
-    }
-
-    $query_str = $where_str . $query_str;
-
-    $records = R::findAll($this->table, $query_str, $query_params_arr);
     $records = arr_bean_to_arr($records);
 
+    return $this->get_filters($records);
+  }
+
+  public function get_filters($records) {
     $filters = [];
 
     foreach ($records as $record) {
@@ -107,14 +76,7 @@ class FilterGateway extends Gateway {
 
       $filters[] = $filter_data;
     }
-    
-    set_content_range_header($this->table, count($records), $range);
-
-    return $filters; 
-  }
-
-  public function getFiltersByTable($table) {
-    
+    return $filters;
   }
 
   public function get_one_filter($filter_table_id, $filter_name) {
