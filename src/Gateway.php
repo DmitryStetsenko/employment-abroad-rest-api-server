@@ -33,6 +33,7 @@ class Gateway {
     $filter = array_key_exists("filter", $get_params) ? $get_params["filter"] : [];
     $sort = array_key_exists("sort", $get_params) ? $get_params["sort"] : [];
     $range = array_key_exists("range", $get_params) ? $get_params["range"] : [];
+    $is_join = array_key_exists("join", $get_params) ? true : false;
 
     $sort_field = array_key_exists(0, $sort) ? $sort[0] : "id";
     $sort_direction = array_key_exists(1, $sort) ? $sort[1] : "ASC";
@@ -41,6 +42,7 @@ class Gateway {
 
     $query_str = "ORDER BY $sort_field $sort_direction";
 
+    $query_params_arr = [];
     if ($limit) {
       $query_str .= " LIMIT ? OFFSET ?";
       $query_params_arr[] = $limit;
@@ -49,10 +51,14 @@ class Gateway {
       $range = [];
     }
 
-    $where_str = "";
+    if ($is_join) {
+      exit(json_encode($this->table_fields));
+    }
+
     if ($filter) {
       $value = current($filter);
       $field = key($filter);
+      
       $where_str = "WHERE $field = $value";
       next($filter);
 

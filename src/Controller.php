@@ -6,7 +6,7 @@ class Controller {
     $this->gateway = $gateway;
   }
 
-  public function processRequest(string $method, $resource, ?array $get_params): void {
+  public function processRequest(string $method, $part, $resource, ?array $get_params): void {
     
     if($get_params) {
 
@@ -18,7 +18,7 @@ class Controller {
       if (is_numeric($resource)) {
         $this->processResourceRequest($method, $resource);
       } else {
-        $this->processExtraResourceRequest($method, $resource);
+        $this->processExtraResourceRequest($method, $part, $resource);
       }
 
     } else {
@@ -86,7 +86,9 @@ class Controller {
 
   }
 
-  private function  processExtraResourceRequest(string $method, $resource): void {
+  private function  processExtraResourceRequest(string $method, $part, $resource): void {
+    exit(json_encode($part));
+
     if ($method !== "GET") {
       return;
     }
