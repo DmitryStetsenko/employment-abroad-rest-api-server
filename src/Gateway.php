@@ -40,6 +40,7 @@ class Gateway {
     $offset = array_key_exists(0, $range) ? $range[0] : 0;
     $limit  = array_key_exists(1, $range) ? $range[1] : null;
 
+    $where_str = "";
     $query_str = "ORDER BY $sort_field $sort_direction";
 
     $query_params_arr = [];
@@ -51,15 +52,11 @@ class Gateway {
       $range = [];
     }
 
-    if ($is_join) {
-      exit(json_encode($this->table_fields));
-    }
-
     if ($filter) {
       $value = current($filter);
       $field = key($filter);
       
-      $where_str = "WHERE $field = $value";
+      $where_str = "WHERE {$this->table}.{$field} = $value";
       next($filter);
 
       while(current($filter)) {
@@ -76,12 +73,21 @@ class Gateway {
 
     $query_str = $where_str . $query_str;
 
-    $record = R::findAll($this->table, $query_str, $query_params_arr);
-    $record = arr_bean_to_arr($record);
+    if ($is_join) {
+      $relation_tables = $this->get_relation_tables();
+      if ($relation_tables) {
+        $query = $this->get_join_relations_query($relation_tables);
+        $query .= $query_str;
+        $records = R::getAll($query);
+        set_content_range_header($this->table, count($records), $range);
+        return $records;
+      }
+    }
 
-    set_content_range_header($this->table, count($record), $range);
-
-    return $record;
+    $records = R::findAll($this->table, $query_str, $query_params_arr);
+    $records= arr_bean_to_arr($records);
+    set_content_range_header($this->table, count($records), $range);
+    return $records;
   }
 
   public function getMany($ids) {
@@ -144,7 +150,15 @@ class Gateway {
   }
 
   public function getFull() {
-    return "get full data from {$this->table}";
+    $relation_tables = $this->get_relation_tables();
+    if (!$relation_tables) {
+      return [];
+    }
+
+    $query = $this->get_join_relations_query($relation_tables);
+    $result = R::getAll($query);
+
+    return $result;
   }
 
   public function update($record, $new_data) {
@@ -225,5 +239,39 @@ class Gateway {
       ];
     }
     return ["ok"  => true];
+  }
+
+  public function get_relation_tables() {
+    $fields = array_keys($this->table_fields);
+    $relations = array_values(array_filter($fields, function($key) {
+      return substr_count($key, '_');
+    }));
+    $relation_tables = array_map(function($item) {
+      return explode('_', $item)[0];
+    }, $relations);
+
+    return $relation_tables;
+  }
+
+  public function get_join_relations_query($relation_tables) {
+    if (!$relation_tables) {
+      return false;
+    }
+
+    $select_str = '';
+    $join_str = '';
+
+    foreach ($relation_tables as $index => $table) {
+      $comma = $index !== count($relation_tables) - 1 ? ',' : '';
+      $select_str .= "$table.name as {$table}_name{$comma}";
+      $join_str .= "INNER JOIN $table ON {$this->table}.{$table}_id = $table.id ";
+    }
+
+    $query = 
+    "SELECT {$this->table}.*, {$select_str}
+    FROM {$this->table} 
+    $join_str";
+
+    return $query;
   }
 }

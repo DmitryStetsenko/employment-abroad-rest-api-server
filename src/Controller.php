@@ -87,8 +87,6 @@ class Controller {
   }
 
   private function  processExtraResourceRequest(string $method, $part, $resource): void {
-    exit(json_encode($part));
-
     if ($method !== "GET") {
       return;
     }
