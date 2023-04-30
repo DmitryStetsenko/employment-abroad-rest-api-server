@@ -28,9 +28,7 @@ class FilterGateway extends Gateway {
 
     $record->available = true;
 
-    $relations = [
-      "filtertable" => $data["filtertable_id"],
-    ];
+    $relations = $this->get_relations_array($data);
 
     foreach( $relations as $relation_table => $id ) {
       $relation = R::load(TABLE[$relation_table], $id);

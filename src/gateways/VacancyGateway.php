@@ -33,12 +33,7 @@ class VacancyGateway extends Gateway {
     $record->available = true;
     $record->created = date("Y-m-d H:i:s");
 
-    $relations = [
-      "employer" => $data["employer_id"],
-      "country" => $data["country_id"],
-      "speciality" => $data["speciality_id"],
-      "expirience" => $data["expirience_id"],
-    ];
+    $relations = $this->get_relations_array($data);
 
     foreach( $relations as $relation_table => $id ) {
       $relation = R::load(TABLE[$relation_table], $id);

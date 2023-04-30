@@ -20,7 +20,7 @@ class SpecialityGateway extends Gateway {
     
     $record->name = $data["name"];
 
-    $relations = [];
+    $relations = $this->get_relations_array($data);
 
     foreach( $relations as $relation_table => $id ) {
       $relation = R::load(TABLE[$relation_table], $id);

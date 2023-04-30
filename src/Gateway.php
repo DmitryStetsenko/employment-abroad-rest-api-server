@@ -218,6 +218,8 @@ class Gateway {
     ];
   }
 
+  // ================= SUPPORT FUNCTION ========================
+
   public function check_fields($data) {
     $check_arr = $this->table_fields;
     
@@ -273,5 +275,19 @@ class Gateway {
     $join_str";
 
     return $query;
+  }
+
+  public function get_relations_array($data) {
+    $relation_tables = $this->get_relation_tables();
+    if (!$relation_tables) {
+      return [];
+    }
+
+    $relations = [];
+    foreach ($relation_tables as $key) {
+      $relations[$key] = $data[$key . "_id"];
+    }
+
+    return $relations;
   }
 }
