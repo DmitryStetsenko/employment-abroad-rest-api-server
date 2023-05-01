@@ -99,12 +99,23 @@ class Controller {
         break;
       
       default:
-        
+        if (count($part) !== 3) {
+          http_response_code(404);
+          echo json_encode([
+            "message" => "unknown resource '{$resource}' !!!",
+          ]);
+          break;
 
-        http_response_code(404);
-        echo json_encode([
-          "message" => "unknown resource '{$resource}' !!!",
-        ]);
+        }
+
+        // get vacancy from relation table ownVacancyList
+        $table = $part[0];
+        $relation_table = $part[1];
+        $ralation_table_id = $part[2];
+
+        http_response_code(200);
+        $records = $this->gateway->getVacancyBy($relation_table, $ralation_table_id);
+        echo json_encode($records);
         break;
     }
   }
