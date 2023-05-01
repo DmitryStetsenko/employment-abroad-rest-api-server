@@ -92,5 +92,4 @@ switch ($table) {
 
 $controller->processRequest($_SERVER["REQUEST_METHOD"], $part, $resource, $get_params);
 
-
 ?>

@@ -91,11 +91,17 @@ class FilterGateway extends Gateway {
     }
 
     $filter_table_data = arr_bean_to_arr($filter_table_data);
-    $filter_fields = array_column($filter_table_data, "name");
+    $filter_arr = [];
+    foreach ($filter_table_data as $field) {
+      $filter_arr[] = [
+        "id" => $field["id"],
+        "name"  => $field["name"],
+      ];
+    }
 
     $filter_data["name"] = $filter_name;
     $filter_data["tablename"] = $filter_table_name;
-    $filter_data["fields"] = $filter_fields;
+    $filter_data["fields"] = $filter_arr;
 
     return $filter_data;
   }
