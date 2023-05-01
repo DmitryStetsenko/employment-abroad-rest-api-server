@@ -39,7 +39,9 @@ if (!array_key_exists($table, TABLE)) {
   exit;
 }
 
-$resource = $part[2] ?? null;
+$part  = array_values(array_filter($part));
+
+$resource = $part[1] ?? null;
 $resource = $resource ? trim($resource) : null;
 $resource = is_numeric($resource) ? (int) $resource : $resource;
 

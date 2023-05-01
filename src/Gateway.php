@@ -63,7 +63,7 @@ class Gateway {
         $field = key($filter);
         $value = current($filter);
 
-        $where_str .= " AND $field = $value";
+        $where_str .= " AND {$this->table}.$field = $value";
 
         next($filter);
       }
@@ -78,6 +78,7 @@ class Gateway {
       if ($relation_tables) {
         $query = $this->get_join_relations_query($relation_tables);
         $query .= $query_str;
+
         $records = R::getAll($query);
         set_content_range_header($this->table, count($records), $range);
         return $records;
