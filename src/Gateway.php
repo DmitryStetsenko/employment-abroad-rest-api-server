@@ -6,13 +6,26 @@ class Gateway {
   public $table_fields;
 
   public function get($id) {
-    $record = R::load($this->table, $id);
+    // $record = R::load($this->table, $id);
 
-    if ($record->id === 0) {
-      return null;
-    }
+    // if ($record->id === 0) {
+    //   return null;
+    // }
 
-    return bean_to_arr($record); 
+    // return bean_to_arr($record); 
+
+    $where_str = "WHERE {$this->table}.id = $id";
+    $relation_tables = $this->get_relation_tables();
+      if ($relation_tables) {
+        $query = $this->get_join_relations_query($relation_tables);
+        $query .= $where_str;
+
+        $records = R::getAll($query);
+
+        // exit(json_encode($records));
+        set_content_range_header($this->table, count($records));
+        return $records[0];
+      }
   }
 
   public function getAll() {
