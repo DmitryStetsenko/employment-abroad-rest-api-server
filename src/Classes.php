@@ -14,3 +14,4 @@ require 'src/gateways/SpecialityGateway.php';
 require 'src/gateways/ExpirienceGateway.php';
 require 'src/gateways/FilterGateway.php';
 require 'src/gateways/FiltertableGateway.php';
+require 'src/gateways/HousingGateway.php';

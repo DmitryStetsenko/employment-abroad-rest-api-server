@@ -22,7 +22,7 @@ class Gateway {
 
         $records = R::getAll($query);
 
-        // exit(json_encode($records));
+        // exit(json_encode($query));
         set_content_range_header($this->table, count($records));
         return $records[0];
       }

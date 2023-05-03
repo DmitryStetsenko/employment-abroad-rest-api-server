@@ -74,6 +74,10 @@ switch ($table) {
     $controller = new Controller(new ExpirienceGateway);
     break;
 
+  case "housing":
+    $controller = new Controller(new HousingGateway);
+    break;
+
   case "filter":
     $controller = new Controller(new FilterGateway);
     break;

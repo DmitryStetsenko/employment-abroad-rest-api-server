@@ -9,8 +9,7 @@ define('TABLE', [
   'country'     => 'country',
   'speciality'  => 'speciality',
   'expirience'  => 'expirience',
-  'payment'     => 'payment',
-  'city'        => 'city',
+  'housing'     => 'housing',
   'filter'      => 'filter',
   'filtertable' => 'filtertable',
 ]);

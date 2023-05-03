@@ -14,6 +14,7 @@ class VacancyGateway extends Gateway {
       "country_id"  => false,
       "speciality_id" => false,
       "expirience_id" => false,
+      "housing_id" => false,
     ];
   }
   
