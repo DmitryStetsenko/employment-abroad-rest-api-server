@@ -48,7 +48,7 @@ class Controller {
   private function processResourceRequest(string $method, int $id): void {
     $record = $this->gateway->get($id);
 
-    if ( ! $record) {
+    if ( !$record) {
       http_response_code(404);
       echo json_encode(["message" => "Record not found"]);
       return;

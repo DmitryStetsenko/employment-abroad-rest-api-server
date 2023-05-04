@@ -13,7 +13,7 @@ class Gateway {
 
     $record = R::dispense($this->table);
     foreach ($this->table_fields as $field => $value) {
-      if (substr_count($key, '_')) {
+      if (substr_count($field, '_')) {
         continue;
       }
 
@@ -39,13 +39,7 @@ class Gateway {
   }
 
   public function get($id) {
-    // $record = R::load($this->table, $id);
-
-    // if ($record->id === 0) {
-    //   return null;
-    // }
-
-    // return bean_to_arr($record); 
+    
 
     $where_str = "WHERE {$this->table}.id = $id";
     $relation_tables = $this->get_relation_tables();
@@ -57,8 +51,17 @@ class Gateway {
 
         // exit(json_encode($query));
         set_content_range_header($this->table, count($records));
+        exit(json_encode($records));
         return $records[0];
       }
+
+    $record = R::load($this->table, $id);
+
+    if ($record->id === 0) {
+      return null;
+    }
+
+    return bean_to_arr($record); 
   }
 
   public function getAll() {
