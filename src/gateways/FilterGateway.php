@@ -23,6 +23,7 @@ class FilterGateway extends Gateway {
     $record = R::dispense($this->table);
     
     $record->name = $data["name"];
+  
     $record->available = true;
 
     if (!$this->make_relations_indexes($data, $record)) {

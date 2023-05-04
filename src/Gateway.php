@@ -14,6 +14,7 @@ class Gateway {
     $record = R::dispense($this->table);
     
     $record->name = $data["name"];
+    
 
     if (!$this->make_relations_indexes($data, $record)) {
       R::store($record);
