@@ -12,10 +12,19 @@ class Gateway {
     }
 
     $record = R::dispense($this->table);
-    
-    $record->name = $data["name"];
+    foreach ($this->table_fields as $field => $value) {
+      if (substr_count($key, '_')) {
+        continue;
+      }
+
+      $record->{$field} = $data[$field];
+    }
     
 
+    if (key_exists('available', $this->table_fields)) {
+      $record->available = true;
+    }
+    
     if (!$this->make_relations_indexes($data, $record)) {
       R::store($record);
     }

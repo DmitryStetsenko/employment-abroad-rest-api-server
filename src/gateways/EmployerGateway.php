@@ -23,14 +23,14 @@ class EmployerGateway extends Gateway {
     }
 
     $created_data = date("Y-m-d H:i:s");
+    $user->created = $created_data;
 
     $user_data = ["login", "password", "email", "phone"];
     $user = R::dispense(TABLE['user']);
     foreach($user_data as $field) {
       $user->$field = $data[$field];
     }
-    $user->created = $created_data;
-
+    
     $record = R::dispense($this->table);
     $record->name = $data["name"];
     $record->created = $created_data;

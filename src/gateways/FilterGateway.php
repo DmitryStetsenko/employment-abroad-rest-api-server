@@ -2,7 +2,6 @@
 
 class FilterGateway extends Gateway {
   
-
   function __construct() {
     $this->table = TABLE["filter"];
     $this->table_fields = [
@@ -11,32 +10,6 @@ class FilterGateway extends Gateway {
 
       "filtertable_id" => false,
     ];
-  }
-
-  public function create($data){
-    // exit (json_encode($data));
-    $result = $this->check_fields($data);
-    if (!$result["ok"]) {
-      return $result;
-    }
-
-    $record = R::dispense($this->table);
-    
-    $record->name = $data["name"];
-  
-    $record->available = true;
-
-    if (!$this->make_relations_indexes($data, $record)) {
-      R::store($record);
-    }
-
-    $result = [
-      "ok"  => true,
-      "meassage"  => "record created",
-      "id"  => $record->id
-    ];
-
-    return $result;
   }
 
   public function getAll() {
