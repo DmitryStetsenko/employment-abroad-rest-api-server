@@ -94,4 +94,16 @@ function str_to_cap($s){
   
   return $ret;
 }
+
+function require_gateways($table_arr, $exclude_arr = []) {
+  foreach ($table_arr as $key => $value) {
+    if (in_array($key, $exclude_arr)) {
+      continue;
+    }
+
+    $gateway_name = ucfirst($value);
+    $gateway_classname = "{$gateway_name}Gateway.php";
+    require "src/gateways/{$gateway_classname}";
+  }
+}
 ?>
