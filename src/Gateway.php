@@ -271,6 +271,10 @@ class Gateway {
     return ["ok"  => true];
   }
 
+  public function check_table_name($table_name) {
+    return key_exists($table_name, TABLE);
+  }
+
   public function get_relation_tables() {
     $fields = array_keys($this->table_fields);
     $relations = array_values(array_filter($fields, function($key) {
@@ -318,4 +322,34 @@ class Gateway {
 
     return $relations;
   }
+
+  public function make_relations_indexes($create_record_data_arr, $record_bean) {
+    $relations = $this->get_relations_array($create_record_data_arr);
+    if (!$relations) {
+      return;
+    }
+
+    foreach( $relations as $relation_table => $id ) {
+      $own_list_name = $this->make_own_list_name($this->table);
+      if (!$own_list_name) {
+        continue;
+      }
+
+      $relation = R::load(TABLE[$relation_table], $id);
+      $relation->{$own_list_name}[] = $record_bean;
+      R::store($relation);
+    }
+  }
+
+  public function make_own_list_name($table_name) {
+    $own_list_name = "";
+    if (!$this->check_table_name($table_name)) {
+      return $own_list_name;
+    }
+
+    $own_table_name = ucfirst($table_name);
+    $own_list_name = "own{$own_table_name}List";
+
+    return $own_list_name;
+  } 
 }
