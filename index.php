@@ -45,57 +45,9 @@ $resource = $part[1] ?? null;
 $resource = $resource ? trim($resource) : null;
 $resource = is_numeric($resource) ? (int) $resource : $resource;
 
-switch ($table) {
-  case "user":
-    $controller = new Controller(new UserGateway);
-    break;
-
-  case "role":
-    $controller = new Controller(new RoleGateway);
-    break;
-
-  case "employer":
-    $controller = new Controller(new EmployerGateway);
-    break;
-
-  case "vacancy":
-    $controller = new Controller(new VacancyGateway);
-    break;
-
-  case "country":
-    $controller = new Controller(new CountryGateway);
-    break;
-
-  case "speciality":
-    $controller = new Controller(new SpecialityGateway);
-    break;
-
-  case "expirience":
-    $controller = new Controller(new ExpirienceGateway);
-    break;
-
-  case "housing":
-    $controller = new Controller(new HousingGateway);
-    break;
-
-  case "filter":
-    $controller = new Controller(new FilterGateway);
-    break;
-
-  case "filtertable":
-    $controller = new Controller(new FiltertableGateway);
-    break;
-  
-  default:
-    $request['status'] = '404';
-    $request['message'] = 'controller not found';
-
-    http_response_code(404);
-    echo json_encode($request);
-    exit;
-    break;
-}
-
+// set controller ==============================================
+$gateway_name = ucfirst($table);
+$gateway = "{$gateway_name}Gateway";
+$controller = new Controller(new $gateway);
 $controller->processRequest($_SERVER["REQUEST_METHOD"], $part, $resource, $get_params);
-
 ?>
