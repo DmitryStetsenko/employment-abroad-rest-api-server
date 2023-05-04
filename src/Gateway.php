@@ -239,6 +239,13 @@ class Gateway {
     return arr_bean_to_arr($vacancies);
   }
 
+  public function getBy($relation_table, $id) {
+    $src_table = R::load(TABLE[$relation_table], $id);
+    $vacancies = $src_table->ownEmployerList;
+
+    return arr_bean_to_arr($vacancies);
+  }
+
   // ================= SUPPORT FUNCTION ========================
 
   public function check_fields($data) {

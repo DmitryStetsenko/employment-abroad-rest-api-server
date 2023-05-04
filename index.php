@@ -48,6 +48,15 @@ $resource = is_numeric($resource) ? (int) $resource : $resource;
 // set controller ==============================================
 $gateway_name = ucfirst($table);
 $gateway = "{$gateway_name}Gateway";
+if (!class_exists($gateway)) {
+  $request['status'] = '404';
+  $request['message'] = "gateway $gateway not found";
+
+  http_response_code(404);
+  echo json_encode($request);
+  exit;
+}
+
 $controller = new Controller(new $gateway);
 $controller->processRequest($_SERVER["REQUEST_METHOD"], $part, $resource, $get_params);
 ?>

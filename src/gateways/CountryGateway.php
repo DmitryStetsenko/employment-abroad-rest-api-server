@@ -5,6 +5,7 @@ class CountryGateway extends Gateway {
 
   function __construct() {
     $this->table = TABLE["country"];
+    
     $this->table_fields = [
       "name" => false,
     ];
@@ -40,16 +41,5 @@ class CountryGateway extends Gateway {
       "id"  => $record_id
     ];
     return $result;
-  }
-
-  public function getBy($relation_table, $id, $type='array') {
-    $src_table = R::load(TABLE[$relation_table], $id);
-    $vacancies = $src_table->ownCountryList;
-
-    if ($type != 'array') {
-      return $vacancies;
-    }
-
-    return arr_bean_to_arr($vacancies);
   }
 }

@@ -13,5 +13,3 @@ define('TABLE', [
   'filter'      => 'filter',
   'filtertable' => 'filtertable',
 ]);
-
-?>

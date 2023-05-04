@@ -44,8 +44,4 @@ class FiltertableGateway extends Gateway {
     ];
     return $result;
   }
-
-  public function getFiltersByTable($table) {
-    
-  }
 }
