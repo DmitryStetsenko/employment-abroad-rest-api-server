@@ -39,7 +39,7 @@ class EmployerGateway extends Gateway {
     R::store($user);
 
     $relations = $this->get_relations_array($data);
-
+// !!!!!!!
     foreach( $relations as $relation_table => $id ) {
       $relation = R::load(TABLE[$relation_table], $id);
       $relation->ownEmployerList[] = $record;

@@ -20,25 +20,16 @@ class HousingGateway extends Gateway {
     
     $record->name = $data["name"];
 
-    $relations = $this->get_relations_array($data);
-
-    foreach( $relations as $relation_table => $id ) {
-      $relation = R::load(TABLE[$relation_table], $id);
-      $relation->ownHousingList[] = $record;
-      R::store($relation);
-    }
-
-    if (!$relations) {
+    if (!$this->make_relations_indexes($data, $record)) {
       R::store($record);
     }
-    
-    $record_id = $record->id;
 
     $result = [
       "ok"  => true,
       "meassage"  => "record created",
-      "id"  => $record_id
+      "id"  => $record->id
     ];
+
     return $result;
   }
 }
