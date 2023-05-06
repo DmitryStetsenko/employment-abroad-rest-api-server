@@ -39,7 +39,7 @@ class Gateway {
   }
 
   public function get($id) {
-    
+    exit(json_encode($_SERVER));
 
     $where_str = "WHERE {$this->table}.id = $id";
     $relation_tables = $this->get_relation_tables();
@@ -51,7 +51,6 @@ class Gateway {
 
         // exit(json_encode($query));
         set_content_range_header($this->table, count($records));
-        exit(json_encode($records));
         return $records[0];
       }
 
