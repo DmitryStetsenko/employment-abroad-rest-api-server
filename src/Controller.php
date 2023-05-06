@@ -16,9 +16,9 @@ class Controller {
     else if ($resource) {
 
       if (is_numeric($resource)) {
-        $this->processResourceRequest($method, $resource);
+        $this->processResourceRequest($method, $resource, $part);
       } else {
-        $this->processExtraResourceRequest($method, $part, $resource);
+        $this->processExtraResourceRequest($method, $resource);
       }
 
     } else {
@@ -45,8 +45,8 @@ class Controller {
     }
   }
 
-  private function processResourceRequest(string $method, int $id): void {
-    $record = $this->gateway->get($id);
+  private function processResourceRequest(string $method, int $id, $part=[]): void {
+    $record = $this->gateway->get($id, $part);
 
     if ( !$record) {
       http_response_code(404);

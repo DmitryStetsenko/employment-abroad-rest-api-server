@@ -38,8 +38,18 @@ class Gateway {
     return $result;
   }
 
-  public function get($id) {
-    exit(json_encode($_SERVER));
+  public function get($id, $part=[]) {
+    $is_full = $part[2] ?? null;
+
+    if (!$is_full || $is_full !== 'full') {
+      $record = R::load($this->table, $id);
+
+      if ($record->id === 0) {
+        return null;
+      }
+
+      return bean_to_arr($record); 
+    }
 
     $where_str = "WHERE {$this->table}.id = $id";
     $relation_tables = $this->get_relation_tables();
@@ -53,15 +63,7 @@ class Gateway {
         set_content_range_header($this->table, count($records));
         return $records[0];
       }
-
-    $record = R::load($this->table, $id);
-
-    if ($record->id === 0) {
-      return null;
-    }
-
-    return bean_to_arr($record); 
-  }
+}
 
   public function getAll() {
     $records = R::findAll(
