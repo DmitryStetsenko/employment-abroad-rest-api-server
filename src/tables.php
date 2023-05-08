@@ -10,6 +10,7 @@ define('TABLE', [
   'speciality'  => 'speciality',
   'expirience'  => 'expirience',
   'housing'     => 'housing',
+  'language'   => 'language',
   'filter'      => 'filter',
   'filtertable' => 'filtertable',
 ]);

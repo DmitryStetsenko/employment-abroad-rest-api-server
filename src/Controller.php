@@ -45,7 +45,7 @@ class Controller {
     }
   }
 
-  private function processResourceRequest(string $method, int $id, $part=[]): void {
+  private function processResourceRequest(string $method, int $id, $part): void {
     $record = $this->gateway->get($id, $part);
 
     if ( !$record) {

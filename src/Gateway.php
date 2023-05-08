@@ -335,7 +335,7 @@ class Gateway {
     foreach ($relation_tables as $index => $table) {
       $comma = $index !== count($relation_tables) - 1 ? ',' : '';
       $select_str .= "$table.name as {$table}_name{$comma}";
-      $join_str .= "INNER JOIN $table ON {$this->table}.{$table}_id = $table.id ";
+      $join_str .= "LEFT JOIN $table ON {$this->table}.{$table}_id = $table.id ";
     }
 
     $query = 
