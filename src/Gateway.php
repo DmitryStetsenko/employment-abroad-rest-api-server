@@ -17,7 +17,9 @@ class Gateway {
         continue;
       }
 
-      $record->{$field} = $data[$field];
+      if (key_exists($field, $data)) {
+        $record->{$field} = $data[$field];
+      }
     }
     
 
