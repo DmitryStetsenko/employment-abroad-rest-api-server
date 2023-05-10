@@ -71,7 +71,7 @@ class Gateway {
     $records = R::findAll(
                       $this->table, 
                       "ORDER BY ? ? LIMIT ? OFFSET ?", 
-                      ['title', 'ASC', 10, 0]
+                      ['title', 'ASC', 100, 0]
                     );
 
     if (!$records) {
@@ -337,6 +337,10 @@ class Gateway {
     foreach ($relation_tables as $index => $table) {
       $comma = $index !== count($relation_tables) - 1 ? ',' : '';
       $select_str .= "$table.name as {$table}_name{$comma}";
+      // for language table add level
+      if ($table === "language") {
+        $select_str .= "$table.level as {$table}_level{$comma}";
+      }
       $join_str .= "LEFT JOIN $table ON {$this->table}.{$table}_id = $table.id ";
     }
 

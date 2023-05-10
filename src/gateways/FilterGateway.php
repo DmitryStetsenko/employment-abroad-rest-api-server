@@ -55,10 +55,17 @@ class FilterGateway extends Gateway {
     $filter_table_data = arr_bean_to_arr($filter_table_data);
     $filter_arr = [];
     foreach ($filter_table_data as $field) {
-      $filter_arr[] = [
+      $filter_item = [
         "id" => $field["id"],
         "name"  => $field["name"],
       ];
+
+      // for lenguage fulter add level
+      if ($filter_table_name === "language") {
+        $filter_item["level"] = $field["level"];
+      }
+
+      $filter_arr[] = $filter_item;
     }
 
     $filter_data["name"] = $filter_name;
