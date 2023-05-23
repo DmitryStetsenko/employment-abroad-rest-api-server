@@ -67,7 +67,7 @@ class EmployerGateway extends Gateway {
     $id = $record->id;
 
     R::hunt($this->table, 'id = ?', [$id]);
-    R::hunt(TABLE["user"], 'id = ?', [$this->user_id]);
+    R::hunt(TABLE["user"], 'id = ?', [$id]);
 
     return [
       "message" => "Vacancy $record->id deleted",

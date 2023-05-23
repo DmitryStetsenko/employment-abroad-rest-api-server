@@ -218,7 +218,13 @@ class Gateway {
     $record = R::convertToBean($this->table, $record);
     $rows = 0;
     foreach($new_data as $field => $value) {
-      $record->{$field} = $value;
+      if ($field === "thumbnails") {
+        
+        $record->{$field} =  $value->rawFile->path;
+      } else {
+        $record->{$field} = $value;
+      }
+      
     }
     R::store($record);
 

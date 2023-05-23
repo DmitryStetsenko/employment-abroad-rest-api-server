@@ -9,7 +9,7 @@ class VacancyGateway extends Gateway {
       "salary" => false,
       "additionally" => true,
       "available" => true,
-      // "thumbnails" => false,
+      "thumbnails" => true,
       
       "employer_id" => false,
       "speciality_id" => false,
@@ -31,7 +31,7 @@ class VacancyGateway extends Gateway {
     $record->title = $data["title"];
     $record->description = $data["description"];
     $record->salary = $data["salary"];
-    // $record->thumbnails = json_encode($data["thumbnails"]);
+    $record->thumbnails = $data["thumbnails"] ? $data["thumbnails"]->rawFile->path : null;
 
     $record->additionally = $data["additionally"] ?? NULL;
     $record->available = true;
